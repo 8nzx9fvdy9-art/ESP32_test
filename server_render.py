@@ -111,8 +111,8 @@ if __name__ == "__main__":
     app = web.Application()
     
     # Route sulla root: gestisce sia HTTP health checks che WebSocket
+    # Nota: add_get registra automaticamente anche HEAD per health checks
     app.router.add_get('/', root_handler)
-    app.router.add_head('/', root_handler)
     
     # Route alternativa per WebSocket su /ws
     app.router.add_get('/ws', websocket_handler)
