@@ -109,20 +109,24 @@ async def main():
         input_running = threading.Event()
         input_running.set()  # Inizia come attivo
         
+        # Ottieni l'event loop del thread principale
+        loop = asyncio.get_event_loop()
+        
         def read_input():
             """Legge input da terminale in un thread separato"""
             while input_running.is_set():
                 try:
                     user_input = input("> ").strip()
                     if user_input:
+                        # Usa l'event loop del thread principale
                         asyncio.run_coroutine_threadsafe(
                             input_queue.put(user_input),
-                            asyncio.get_event_loop()
+                            loop
                         )
                 except (EOFError, KeyboardInterrupt):
                     asyncio.run_coroutine_threadsafe(
                         input_queue.put("__QUIT__"),
-                        asyncio.get_event_loop()
+                        loop
                     )
                     break
         
