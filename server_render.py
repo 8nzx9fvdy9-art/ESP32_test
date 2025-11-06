@@ -56,6 +56,7 @@ async def handle_client(websocket, path):
         await websocket.send(welcome_msg)
         
         # Ricevi e inoltra messaggi
+        # Nota: ping/pong è gestito automaticamente dal server (configurato in websockets.serve)
         async for message in websocket:
             print(f"[{datetime.now().strftime('%H:%M:%S')}] Messaggio ricevuto: {message}")
             
@@ -64,6 +65,8 @@ async def handle_client(websocket, path):
             
     except websockets.exceptions.ConnectionClosed:
         pass
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] Errore nel client: {e}")
     finally:
         await unregister_client(websocket)
 
@@ -80,7 +83,15 @@ async def main():
     print("Premi Ctrl+C per fermare il server")
     print("="*60)
     
-    async with websockets.serve(handle_client, host, port):
+    # Configura il server con ping/pong per mantenere le connessioni attive
+    async with websockets.serve(
+        handle_client, 
+        host, 
+        port,
+        ping_interval=20,  # Ping ogni 20 secondi
+        ping_timeout=10,   # Timeout di 10 secondi
+        close_timeout=10   # Timeout di chiusura
+    ):
         await asyncio.Future()  # Esegui indefinitamente
 
 if __name__ == "__main__":

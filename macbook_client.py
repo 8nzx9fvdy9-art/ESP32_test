@@ -13,12 +13,13 @@ from datetime import datetime
 
 # ===== CONFIGURAZIONE SERVER =====
 # Deve essere lo stesso server usato dall'ESP32
-WEBSOCKET_SERVER = "nonflatulent-colby-pearly.ngrok-free.dev"  # URL ngrok
+WEBSOCKET_SERVER = "esp32-test-q46k.onrender.com"  # URL Render
 WEBSOCKET_PORT = 443  # HTTPS usa porta 443
 WEBSOCKET_PATH = "/"
 
 # URL completo (usa wss:// per HTTPS, non ws://)
-WEBSOCKET_URL = f"wss://{WEBSOCKET_SERVER}:{WEBSOCKET_PORT}{WEBSOCKET_PATH}"
+# Nota: Render gestisce automaticamente la porta 443, quindi possiamo ometterla
+WEBSOCKET_URL = f"wss://{WEBSOCKET_SERVER}{WEBSOCKET_PATH}"
 
 class MacBookWebSocketClient:
     def __init__(self):
@@ -29,7 +30,13 @@ class MacBookWebSocketClient:
         """Connette al server WebSocket"""
         try:
             print(f"Connessione a {WEBSOCKET_URL}...")
-            self.websocket = await websockets.connect(WEBSOCKET_URL)
+            # Aggiungi ping_interval e ping_timeout per mantenere la connessione attiva
+            self.websocket = await websockets.connect(
+                WEBSOCKET_URL,
+                ping_interval=20,  # Ping ogni 20 secondi
+                ping_timeout=10,  # Timeout di 10 secondi
+                close_timeout=10  # Timeout di chiusura
+            )
             self.connected = True
             print("✓ Connesso al server WebSocket!")
             return True

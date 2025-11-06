@@ -8,12 +8,8 @@ const char* ssid = "2-WifiCole";
 const char* password = "Nr8w1n46zp3b?";
 
 // ===== CONFIGURAZIONE SERVER =====
-// Indirizzo del server WebSocket intermedio
-// Opzioni:
-// 1. Usa un servizio pubblico come echo.websocket.org per test
-// 2. Usa un server proprio (vedi istruzioni nel README)
-// 3. Usa un servizio cloud come Heroku, Railway, etc.
-const char* websocket_server = "nonflatulent-colby-pearly.ngrok-free.dev";  // Server pubblico per test
+// Indirizzo del server WebSocket su Render.com
+const char* websocket_server = "esp32-test-q46k.onrender.com";  // Server Render
 const int websocket_port = 443;
 const char* websocket_path = "/";
 
@@ -121,10 +117,10 @@ void setup() {
     }
     
     // Configurazione WebSocket
-    // Per HTTPS/WSS (ngrok), usa beginSSL senza fingerprint per accettare qualsiasi certificato
+    // Per HTTPS/WSS (Render.com), usa beginSSL per connessione sicura
     if (websocket_port == 443) {
-        // Connessione sicura (WSS) per ngrok HTTPS
-        // beginSSL senza fingerprint accetta qualsiasi certificato SSL (necessario per ngrok)
+        // Connessione sicura (WSS) per Render HTTPS
+        // beginSSL accetta certificati SSL validi (Render usa certificati validi)
         webSocket.beginSSL(websocket_server, websocket_port, websocket_path);
     } else {
         // Connessione normale (WS) per HTTP
