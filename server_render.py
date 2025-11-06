@@ -118,20 +118,8 @@ async def root_handler(request):
         headers={"Content-Type": "text/plain"}
     )
 
-if __name__ == "__main__":
-    # Render usa la variabile d'ambiente PORT, altrimenti usa 8765
-    port = int(os.environ.get("PORT", 8765))
-    host = "0.0.0.0"  # Ascolta su tutte le interfacce
-    
-    print("="*60)
-    print("Server WebSocket per ESP32 <-> MacBook")
-    print("="*60)
-    print(f"Server in ascolto su ws://{host}:{port}")
-    print(f"Health checks HTTP su http://{host}:{port}/")
-    print("Premi Ctrl+C per fermare il server")
-    print("="*60)
-    
-    # Crea applicazione aiohttp
+async def init_app():
+    """Inizializza l'applicazione aiohttp"""
     app = web.Application()
     
     # Route sulla root: gestisce sia HTTP health checks che WebSocket
@@ -141,9 +129,41 @@ if __name__ == "__main__":
     # Route alternativa per WebSocket su /ws
     app.router.add_get('/ws', websocket_handler)
     
-    # Avvia server (web.run_app gestisce già l'event loop)
-    print("Server avviato. In attesa di connessioni...")
+    return app
+
+async def start_server():
+    """Avvia il server WebSocket"""
+    # Render usa la variabile d'ambiente PORT, altrimenti usa 8765
+    port = int(os.environ.get("PORT", 8765))
+    host = "0.0.0.0"  # Ascolta su tutte le interfacce
+    
+    print("="*60)
+    print("Server WebSocket per ESP32 <-> MacBook")
+    print("="*60)
+    print(f"Server in ascolto su ws://{host}:{port}")
+    print(f"Health checks HTTP su http://{host}:{port}/")
+    print("="*60)
+    
+    app = await init_app()
+    
+    # Avvia server
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, host, port)
+    await site.start()
+    
+    print(f"Server avviato su porta {port}. In attesa di connessioni...")
+    
+    # Mantieni il server in esecuzione
     try:
-        web.run_app(app, host=host, port=port)
+        await asyncio.Future()  # Esegui indefinitamente
+    except KeyboardInterrupt:
+        print("\nServer fermato.")
+    finally:
+        await runner.cleanup()
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(start_server())
     except KeyboardInterrupt:
         print("\nServer fermato.")
