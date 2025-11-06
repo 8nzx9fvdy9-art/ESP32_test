@@ -45,6 +45,25 @@ async def broadcast_message(message: str, sender: WebSocketResponse):
     for client in disconnected:
         await unregister_client(client)
 
+async def broadcast_audio(audio_data: bytes, sender: WebSocketResponse):
+    """Invia dati audio a tutti i client tranne il mittente"""
+    if len(clients) < 2:
+        # Serve almeno un altro client per comunicare
+        return
+    
+    disconnected = set()
+    for client in clients:
+        if client != sender and not client.closed:
+            try:
+                await client.send_bytes(audio_data)
+            except Exception as e:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Errore nell'invio audio: {e}")
+                disconnected.add(client)
+    
+    # Rimuovi client disconnessi
+    for client in disconnected:
+        await unregister_client(client)
+
 async def websocket_handler(request):
     """Gestisce le connessioni WebSocket"""
     ws = WebSocketResponse()
@@ -61,14 +80,19 @@ async def websocket_handler(request):
         })
         await ws.send_str(welcome_msg)
         
-        # Ricevi e inoltra messaggi
+        # Ricevi e inoltra messaggi (testo o binari/audio)
         async for msg in ws:
             if msg.type == web.WSMsgType.TEXT:
                 message = msg.data
-                print(f"[{datetime.now().strftime('%H:%M:%S')}] Messaggio ricevuto: {message}")
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Messaggio testo ricevuto: {message}")
                 
                 # Inoltra a tutti gli altri client
                 await broadcast_message(message, ws)
+            elif msg.type == web.WSMsgType.BINARY:
+                # Dati binari (audio)
+                audio_data = msg.data
+                # Inoltra audio a tutti gli altri client
+                await broadcast_audio(audio_data, ws)
             elif msg.type == web.WSMsgType.ERROR:
                 print(f"[{datetime.now().strftime('%H:%M:%S')}] Errore WebSocket: {ws.exception()}")
                 break
