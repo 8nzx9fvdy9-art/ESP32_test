@@ -2,17 +2,19 @@
 """
 Server WebSocket per Render.com
 Questo server è ottimizzato per Render e supporta WebSocket nativamente
+Gestisce anche health checks HTTP (HEAD/GET) per Render
 """
 
 import asyncio
-import websockets
 import json
 import os
 from datetime import datetime
 from typing import Set
+from aiohttp import web
+from aiohttp.web_ws import WebSocketResponse
 
-# Set per tenere traccia delle connessioni
-clients: Set[websockets.WebSocketServerProtocol] = set()
+# Set per tenere traccia delle connessioni WebSocket
+clients: Set[WebSocketResponse] = set()
 
 async def register_client(websocket):
     """Registra un nuovo client"""
@@ -24,7 +26,7 @@ async def unregister_client(websocket):
     clients.discard(websocket)
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Client disconnesso. Totale: {len(clients)}")
 
-async def broadcast_message(message: str, sender: websockets.WebSocketServerProtocol):
+async def broadcast_message(message: str, sender: WebSocketResponse):
     """Invia un messaggio a tutti i client tranne il mittente"""
     if len(clients) < 2:
         # Serve almeno un altro client per comunicare
@@ -32,19 +34,23 @@ async def broadcast_message(message: str, sender: websockets.WebSocketServerProt
     
     disconnected = set()
     for client in clients:
-        if client != sender and client.open:
+        if client != sender and not client.closed:
             try:
-                await client.send(message)
-            except websockets.exceptions.ConnectionClosed:
+                await client.send_str(message)
+            except Exception as e:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Errore nell'invio: {e}")
                 disconnected.add(client)
     
     # Rimuovi client disconnessi
     for client in disconnected:
         await unregister_client(client)
 
-async def handle_client(websocket, path):
-    """Gestisce la connessione di un client"""
-    await register_client(websocket)
+async def websocket_handler(request):
+    """Gestisce le connessioni WebSocket"""
+    ws = WebSocketResponse()
+    await ws.prepare(request)
+    
+    await register_client(ws)
     
     try:
         # Invia messaggio di benvenuto
@@ -53,25 +59,42 @@ async def handle_client(websocket, path):
             "message": "Connesso al server WebSocket",
             "timestamp": datetime.now().isoformat()
         })
-        await websocket.send(welcome_msg)
+        await ws.send_str(welcome_msg)
         
         # Ricevi e inoltra messaggi
-        # Nota: ping/pong è gestito automaticamente dal server (configurato in websockets.serve)
-        async for message in websocket:
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] Messaggio ricevuto: {message}")
-            
-            # Inoltra a tutti gli altri client
-            await broadcast_message(message, websocket)
-            
-    except websockets.exceptions.ConnectionClosed:
-        pass
+        async for msg in ws:
+            if msg.type == web.WSMsgType.TEXT:
+                message = msg.data
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Messaggio ricevuto: {message}")
+                
+                # Inoltra a tutti gli altri client
+                await broadcast_message(message, ws)
+            elif msg.type == web.WSMsgType.ERROR:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Errore WebSocket: {ws.exception()}")
+                break
+                
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] Errore nel client: {e}")
     finally:
-        await unregister_client(websocket)
+        await unregister_client(ws)
+    
+    return ws
 
-async def main():
-    """Avvia il server WebSocket"""
+async def root_handler(request):
+    """Gestisce le richieste sulla root: HTTP health checks o WebSocket"""
+    # Se è una richiesta WebSocket upgrade, gestiscila come WebSocket
+    if request.headers.get("Upgrade", "").lower() == "websocket":
+        return await websocket_handler(request)
+    
+    # Altrimenti, è una richiesta HTTP normale (HEAD/GET per health checks)
+    # Render fa health checks con richieste HEAD
+    return web.Response(
+        text="WebSocket Server is running",
+        status=200,
+        headers={"Content-Type": "text/plain"}
+    )
+
+if __name__ == "__main__":
     # Render usa la variabile d'ambiente PORT, altrimenti usa 8765
     port = int(os.environ.get("PORT", 8765))
     host = "0.0.0.0"  # Ascolta su tutte le interfacce
@@ -80,23 +103,23 @@ async def main():
     print("Server WebSocket per ESP32 <-> MacBook")
     print("="*60)
     print(f"Server in ascolto su ws://{host}:{port}")
+    print(f"Health checks HTTP su http://{host}:{port}/")
     print("Premi Ctrl+C per fermare il server")
     print("="*60)
     
-    # Configura il server con ping/pong per mantenere le connessioni attive
-    async with websockets.serve(
-        handle_client, 
-        host, 
-        port,
-        ping_interval=20,  # Ping ogni 20 secondi
-        ping_timeout=10,   # Timeout di 10 secondi
-        close_timeout=10   # Timeout di chiusura
-    ):
-        await asyncio.Future()  # Esegui indefinitamente
-
-if __name__ == "__main__":
+    # Crea applicazione aiohttp
+    app = web.Application()
+    
+    # Route sulla root: gestisce sia HTTP health checks che WebSocket
+    app.router.add_get('/', root_handler)
+    app.router.add_head('/', root_handler)
+    
+    # Route alternativa per WebSocket su /ws
+    app.router.add_get('/ws', websocket_handler)
+    
+    # Avvia server (web.run_app gestisce già l'event loop)
+    print("Server avviato. In attesa di connessioni...")
     try:
-        asyncio.run(main())
+        web.run_app(app, host=host, port=port)
     except KeyboardInterrupt:
         print("\nServer fermato.")
-
