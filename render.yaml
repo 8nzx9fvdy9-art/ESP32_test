@@ -3,7 +3,7 @@ services:
     name: websocket-server
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python3 server_render.py
+    startCommand: gunicorn render_server:app --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120
     healthCheckPath: /
     envVars:
       - key: PORT

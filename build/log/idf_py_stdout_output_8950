@@ -1,0 +1,96 @@
+[1/10] Performing build step for 'bootloader'
+[1/1] cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader/esp-idf/esptool_py && /Users/edoardocolella/.espressif/python_env/idf5.1_py3.14_env/bin/python /Users/edoardocolella/esp/v5.1.6/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader/bootloader.bin
+Bootloader binary size 0x6880 bytes. 0x780 bytes (7%) free.
+[2/10] No install step for 'bootloader'
+[3/10] Completed 'bootloader'
+[4/10] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/render_audio_receiver.c.obj
+[5/10] Linking C static library esp-idf/main/libmain.a
+[6/10] Generating ld/sections.ld
+warning: default on the choice symbol AUDIO_BOARD_CUSTOM (defined at /Users/edoardocolella/esp/esp-adf/components/audio_board/Kconfig.projbuild:9, /Users/edoardocolella/esp/esp-adf/components/my_board/Kconfig:3) will have no effect, as defaults do not affect choice symbols
+warning: the choice symbol AUDIO_BOARD_CUSTOM (defined at /Users/edoardocolella/esp/esp-adf/components/audio_board/Kconfig.projbuild:9, /Users/edoardocolella/esp/esp-adf/components/my_board/Kconfig:3) is defined with a prompt outside the choice
+[7/10] Linking CXX executable play_mp3_control.elf
+[8/10] Generating binary image from built executable
+esptool.py v4.10.0
+Creating esp32 image...
+Merged 27 ELF sections
+Successfully created esp32 image.
+Generated /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/play_mp3_control.bin
+[9/10] cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/esp-idf/esptool_py && /Users/edoardocolella/.espressif/python_env/idf5.1_py3.14_env/bin/python /Users/edoardocolella/esp/v5.1.6/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/partition_table/partition-table.bin /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/play_mp3_control.bin
+play_mp3_control.bin binary size 0x102760 bytes. Smallest app partition is 0x177000 bytes. 0x748a0 bytes (31%) free.
+[9/10] cd /Users/edoardocolella/esp/v5.1.6/esp-idf/components/esptool_py && /opt/homebrew/bin/cmake -D IDF_PATH=/Users/edoardocolella/esp/v5.1.6/esp-idf -D "SERIAL_TOOL=/Users/edoardocolella/.espressif/python_env/idf5.1_py3.14_env/bin/python;;/Users/edoardocolella/esp/v5.1.6/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build -P /Users/edoardocolella/esp/v5.1.6/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32 -p /dev/cu.usbserial-0001 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size detect 0x1000 bootloader/bootloader.bin 0x10000 play_mp3_control.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.10.0
+Serial port /dev/cu.usbserial-0001
+Connecting....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 38:18:2b:72:64:30
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Auto-detected Flash size: 4MB
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x00112fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash params set to 0x0220
+Compressed 26752 bytes to 16763...
+Writing at 0x00001000... (50 %)
+Writing at 0x0000768c... (100 %)
+Wrote 26752 bytes (16763 compressed) at 0x00001000 in 0.7 seconds (effective 323.8 kbit/s)...
+Hash of data verified.
+Compressed 1058656 bytes to 677008...
+Writing at 0x00010000... (2 %)
+Writing at 0x00019e31... (4 %)
+Writing at 0x00023cb2... (7 %)
+Writing at 0x0002cc90... (9 %)
+Writing at 0x000392ff... (11 %)
+Writing at 0x00041f94... (14 %)
+Writing at 0x000478da... (16 %)
+Writing at 0x0004d20d... (19 %)
+Writing at 0x000523e0... (21 %)
+Writing at 0x00057419... (23 %)
+Writing at 0x0005d3af... (26 %)
+Writing at 0x00063032... (28 %)
+Writing at 0x00068a9f... (30 %)
+Writing at 0x0006e376... (33 %)
+Writing at 0x00073f7a... (35 %)
+Writing at 0x00079a08... (38 %)
+Writing at 0x0007f332... (40 %)
+Writing at 0x00084df0... (42 %)
+Writing at 0x0008b395... (45 %)
+Writing at 0x00090e9c... (47 %)
+Writing at 0x00096689... (50 %)
+Writing at 0x0009b860... (52 %)
+Writing at 0x000a0d6b... (54 %)
+Writing at 0x000a6244... (57 %)
+Writing at 0x000ab5ed... (59 %)
+Writing at 0x000b0d52... (61 %)
+Writing at 0x000b65e4... (64 %)
+Writing at 0x000bc41a... (66 %)
+Writing at 0x000c1ae7... (69 %)
+Writing at 0x000c71bc... (71 %)
+Writing at 0x000cc88f... (73 %)
+Writing at 0x000d223c... (76 %)
+Writing at 0x000d85ef... (78 %)
+Writing at 0x000ddf18... (80 %)
+Writing at 0x000e377e... (83 %)
+Writing at 0x000ec10f... (85 %)
+Writing at 0x000f46f7... (88 %)
+Writing at 0x000fa353... (90 %)
+Writing at 0x00100256... (92 %)
+Writing at 0x00105c12... (95 %)
+Writing at 0x0010b5d8... (97 %)
+Writing at 0x001108a7... (100 %)
+Wrote 1058656 bytes (677008 compressed) at 0x00010000 in 17.4 seconds (effective 486.3 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 105...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (105 compressed) at 0x00008000 in 0.1 seconds (effective 219.4 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...

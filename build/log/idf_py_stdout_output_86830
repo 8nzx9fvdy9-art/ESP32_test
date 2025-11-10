@@ -1,0 +1,19 @@
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader/esp-idf/esptool_py && /Users/edoardocolella/.espressif/python_env/idf5.1_py3.14_env/bin/python /Users/edoardocolella/esp/v5.1.6/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader/bootloader.bin
+Bootloader binary size 0x6880 bytes. 0x780 bytes (7%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/tts_server_example.c.obj
+[5/9] Linking C static library esp-idf/main/libmain.a
+[6/9] Generating ld/sections.ld
+warning: default on the choice symbol AUDIO_BOARD_CUSTOM (defined at /Users/edoardocolella/esp/esp-adf/components/audio_board/Kconfig.projbuild:9, /Users/edoardocolella/esp/esp-adf/components/my_board/Kconfig:3) will have no effect, as defaults do not affect choice symbols
+warning: the choice symbol AUDIO_BOARD_CUSTOM (defined at /Users/edoardocolella/esp/esp-adf/components/audio_board/Kconfig.projbuild:9, /Users/edoardocolella/esp/esp-adf/components/my_board/Kconfig:3) is defined with a prompt outside the choice
+[7/9] Linking CXX executable play_mp3_control.elf
+[8/9] Generating binary image from built executable
+esptool.py v4.10.0
+Creating esp32 image...
+Merged 27 ELF sections
+Successfully created esp32 image.
+Generated /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/play_mp3_control.bin
+[9/9] cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/esp-idf/esptool_py && /Users/edoardocolella/.espressif/python_env/idf5.1_py3.14_env/bin/python /Users/edoardocolella/esp/v5.1.6/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/partition_table/partition-table.bin /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/play_mp3_control.bin
+play_mp3_control.bin binary size 0x107af0 bytes. Smallest app partition is 0x177000 bytes. 0x6f510 bytes (30%) free.

@@ -1,0 +1,41 @@
+
+#
+# Bootloader config
+#
+CONFIG_BOOTLOADER_OFFSET_IN_FLASH=0x1000
+CONFIG_BOOTLOADER_COMPILER_OPTIMIZATION_SIZE=y
+
+CONFIG_FREERTOS_ENABLE_BACKWARD_COMPATIBILITY=y
+CONFIG_FREERTOS_HZ=1000
+
+#
+# Serial flasher config
+#
+CONFIG_ESPTOOLPY_HEADER_FLASHSIZE_UPDATE=y
+CONFIG_ESPTOOLPY_BEFORE_RESET=y
+# end of Serial flasher config
+
+#
+# Partition Table - SINGLE_APP_LARGE per supportare firmware più grande (TTS server)
+#
+CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE=y
+CONFIG_PARTITION_TABLE_MD5=y
+# end of Partition Table
+
+#
+# SDMMC Configuration - Reduce frequency for stability (50kHz = frequenza minima stabile)
+#
+CONFIG_SDMMC_DEFAULT_FREQ=50000
+CONFIG_FATFS_MAX_LFN=255
+CONFIG_FATFS_TIMEOUT_MS=300000
+CONFIG_SDMMC_HOST_MAX_FREQ_KHZ=50
+# CONFIG_SDMMC_USE_INTERRUPT=y  # Disabilitato per evitare problemi DMA
+# end of SDMMC Configuration
+
+#
+# PSRAM Configuration - Enable external SPI RAM for audio buffers
+#
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_BOOT_INIT=y
+CONFIG_SPIRAM_ALLOW_STACK_EXTERNAL_MEMORY=y
+# end of PSRAM Configuration

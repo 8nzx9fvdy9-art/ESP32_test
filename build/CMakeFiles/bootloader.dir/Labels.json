@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/CMakeFiles/bootloader"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/CMakeFiles/bootloader.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/CMakeFiles/bootloader-complete.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+		},
+		{
+			"file" : "/Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"bootloader"
+		],
+		"name" : "bootloader"
+	}
+}

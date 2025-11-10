@@ -1,0 +1,463 @@
+# 🎙️ Guida Passo-Passo: Sistema TTS ESP32-A1S
+
+Guida completa per principianti per creare un sistema che riproduce testo come voce sull'ESP32-A1S.
+
+---
+
+## 📋 PREREQUISITI - Cosa ti serve
+
+1. **Hardware:**
+   - ESP32-A1S (AI Thinker Audio Kit)
+   - Cavo USB per programmare l'ESP32
+   - Cuffie o speaker con jack audio 3.5mm
+   - MacBook con macOS
+   - Connessione Internet (WiFi)
+
+2. **Software già installato (dovresti averli):**
+   - ESP-IDF v5.1.6
+   - ESP-ADF
+   - Python 3
+
+---
+
+## 🔧 PARTE 1: Preparazione del Progetto ESP32
+
+### Passo 1.1: Apri il Terminale
+
+1. Premi `Cmd + Spazio` per aprire Spotlight
+2. Digita "Terminale" e premi Invio
+3. Si aprirà una finestra nera con il prompt dei comandi
+
+### Passo 1.2: Vai nella Cartella del Progetto
+
+Copia e incolla questo comando nel terminale:
+
+```bash
+cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control
+```
+
+Premi Invio. Dovresti vedere che il prompt cambia e mostra il percorso della cartella.
+
+### Passo 1.3: Attiva l'Ambiente ESP-IDF
+
+Se non l'hai già fatto, carica l'ambiente ESP-IDF:
+
+```bash
+. $HOME/esp/v5.1.6/esp-idf/export.sh
+```
+
+**Nota:** Questo comando deve essere eseguito ogni volta che apri un nuovo terminale!
+
+### Passo 1.4: Cambia il Codice per Usare il Server TTS
+
+Ora dobbiamo dire al progetto di usare il nuovo codice del server TTS invece del vecchio.
+
+1. Apri il file `main/CMakeLists.txt` con un editor di testo (puoi usare TextEdit o qualsiasi editor)
+2. Trova queste righe:
+   ```cmake
+   # set(COMPONENT_SRCS ./tts_server_example.c)
+   set(COMPONENT_SRCS ./play_mp3_control_example.c)
+   ```
+3. Cambiale così (scambia le due righe):
+   ```cmake
+   set(COMPONENT_SRCS ./tts_server_example.c)
+   # set(COMPONENT_SRCS ./play_mp3_control_example.c)
+   ```
+4. Salva il file (Cmd+S)
+
+**In alternativa, puoi farlo dal terminale:**
+
+```bash
+cd main
+sed -i '' 's/^# set(COMPONENT_SRCS \.\/tts_server_example.c)/set(COMPONENT_SRCS .\/tts_server_example.c)/' CMakeLists.txt
+sed -i '' 's/^set(COMPONENT_SRCS \.\/play_mp3_control_example.c)/# set(COMPONENT_SRCS .\/play_mp3_control_example.c)/' CMakeLists.txt
+cd ..
+```
+
+### Passo 1.5: Configura il WiFi
+
+L'ESP32 deve connettersi al tuo WiFi per ricevere i comandi dal MacBook.
+
+**Opzione A: Usando menuconfig (Interfaccia grafica)**
+
+```bash
+idf.py menuconfig
+```
+
+Apparirà un menu a schermo intero. Ecco cosa fare:
+
+1. Usa le **frecce su/giù** per navigare
+2. Vai su **"Component config"** e premi Invio
+3. Vai su **"TTS Server Configuration"** e premi Invio
+4. Seleziona **"WiFi SSID"** e premi Invio
+5. Cancella il testo esistente e scrivi il nome della tua rete WiFi (es: "CasaMia")
+6. Premi Invio per confermare
+7. Seleziona **"WiFi Password"** e premi Invio
+8. Scrivi la password del WiFi
+9. Premi Invio per confermare
+10. Premi **ESC** più volte per uscire
+11. Quando chiede di salvare, premi **S** (Sì)
+
+**Opzione B: Modificando direttamente il file (Più semplice)**
+
+1. Apri il file `sdkconfig` nella cartella del progetto (puoi usare TextEdit)
+2. Cerca queste righe (premi Cmd+F e cerca "WIFI_SSID"):
+   ```ini
+   CONFIG_WIFI_SSID="myssid"
+   CONFIG_WIFI_PASSWORD="mypassword"
+   ```
+3. Sostituiscile con i tuoi dati WiFi:
+   ```ini
+   CONFIG_WIFI_SSID="NOME_DEL_TUO_WIFI"
+   CONFIG_WIFI_PASSWORD="password_del_tuo_wifi"
+   ```
+   **IMPORTANTE:** Sostituisci `NOME_DEL_TUO_WIFI` con il nome reale della tua rete WiFi e `password_del_tuo_wifi` con la password reale!
+4. Salva il file (Cmd+S)
+
+### Passo 1.6: Compila il Progetto
+
+Ora compiliamo il codice per creare il file da installare sull'ESP32:
+
+```bash
+idf.py build
+```
+
+**Cosa succede:** Il computer compilerà tutto il codice. Questo può richiedere 1-3 minuti.
+
+**Se vedi errori:**
+- Controlla di aver attivato l'ambiente ESP-IDF (Passo 1.3)
+- Controlla di essere nella cartella giusta (Passo 1.2)
+- Se vedi errori di compilazione, copiali e incollali qui per aiutarti
+
+**Quando è finito, dovresti vedere:**
+```
+Project build complete. To flash, run this command:
+idf.py -p (PORT) flash
+```
+
+### Passo 1.7: Collega l'ESP32 al MacBook
+
+1. Prendi il cavo USB
+2. Collega l'ESP32 al MacBook
+3. Attendi qualche secondo che il MacBook riconosca il dispositivo
+
+### Passo 1.8: Trova la Porta Serial dell'ESP32
+
+Per sapere su quale porta è collegato l'ESP32, esegui:
+
+```bash
+ls /dev/cu.usb*
+```
+
+Dovresti vedere qualcosa come:
+```
+/dev/cu.usbserial-0001
+```
+
+**Prendi nota di questo nome!** Lo useremo dopo.
+
+**Se non vedi nulla:**
+- Controlla che il cavo USB sia collegato bene
+- Prova a scollegare e ricollegare
+- Controlla che il cavo USB sia un cavo dati (non solo alimentazione)
+
+### Passo 1.9: Flasha il Firmware sull'ESP32
+
+Sostituisci `PORTA` con la porta che hai trovato (es: `/dev/cu.usbserial-0001`):
+
+```bash
+idf.py -p PORTA flash
+```
+
+Esempio:
+```bash
+idf.py -p /dev/cu.usbserial-0001 flash
+```
+
+**Cosa succede:** Il computer invierà il programma all'ESP32. Questo richiede circa 30 secondi.
+
+**Quando è finito, vedrai:**
+```
+Leaving...
+Hard resetting via RTS pin...
+```
+
+### Passo 1.10: Vedi i Log dell'ESP32
+
+Per vedere cosa sta facendo l'ESP32, esegui:
+
+```bash
+idf.py -p PORTA monitor
+```
+
+Sostituisci `PORTA` con la tua porta (es: `/dev/cu.usbserial-0001`).
+
+**Cosa vedrai:**
+- L'ESP32 si avvierà
+- Si connetterà al WiFi
+- Mostrerà l'indirizzo IP assegnato
+
+**Cerca questa riga importante:**
+```
+WiFi connected! IP address: 192.168.1.100
+TTS Server ready! Send POST requests to http://192.168.1.100/play
+```
+
+**📝 SCRIVI L'INDIRIZZO IP!** Ti servirà dopo (es: `192.168.1.100`)
+
+**Per uscire dal monitor:** Premi `Ctrl + ]`
+
+---
+
+## 🐍 PARTE 2: Preparazione del Client Python sul MacBook
+
+### Passo 2.1: Apri un Nuovo Terminale
+
+Lascia il terminale del monitor aperto e apri un **nuovo terminale** (Cmd+T per una nuova tab, o apri una nuova finestra).
+
+### Passo 2.2: Installa le Librerie Python Necessarie
+
+Copia e incolla questi comandi uno alla volta:
+
+```bash
+pip3 install gtts requests
+```
+
+Premi Invio e attendi che l'installazione finisca.
+
+**Cosa fanno queste librerie:**
+- `gtts`: Genera audio da testo usando Google TTS
+- `requests`: Permette di inviare richieste HTTP all'ESP32
+
+**Se vedi errori:**
+- Prova con `pip` invece di `pip3`
+- Se dice "command not found", devi installare Python (puoi scaricarlo da python.org)
+
+### Passo 2.3: Vai nella Cartella del Progetto
+
+```bash
+cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control
+```
+
+### Passo 2.4: Rendi Eseguibile lo Script Python
+
+```bash
+chmod +x tts_client.py
+```
+
+Questo comando permette di eseguire lo script Python.
+
+### Passo 2.5: Modifica l'Indirizzo IP nello Script (OPZIONALE)
+
+Se vuoi cambiare l'IP di default, apri `tts_client.py` con un editor di testo e cerca questa riga:
+
+```python
+DEFAULT_ESP32_IP = "192.168.1.100"
+```
+
+Cambia l'IP con quello che hai visto nel monitor dell'ESP32 (Passo 1.10).
+
+**Nota:** Puoi anche specificare l'IP ogni volta che usi lo script, quindi questo passo è opzionale.
+
+---
+
+## 🎤 PARTE 3: Usare il Sistema TTS
+
+### Passo 3.1: Collega Cuffie o Speaker
+
+1. Collega le cuffie o lo speaker al jack audio 3.5mm dell'ESP32-A1S
+2. Assicurati che siano inserite bene
+
+### Passo 3.2: Primo Test - Invia un Testo
+
+Nel terminale del MacBook (quello dove hai installato le librerie), esegui:
+
+```bash
+python3 tts_client.py "Ciao, questo è un test"
+```
+
+**Sostituisci l'IP se necessario:**
+
+```bash
+python3 tts_client.py --esp32-ip 192.168.1.100 "Ciao, questo è un test"
+```
+
+(Sostituisci `192.168.1.100` con l'IP del tuo ESP32)
+
+**Cosa succede:**
+1. Lo script genera un file audio MP3 dal testo usando Google TTS
+2. Carica il file su un server temporaneo
+3. Invia l'URL all'ESP32
+4. L'ESP32 scarica e riproduce l'audio
+
+**Dovresti sentire la voce che dice "Ciao, questo è un test" dalle cuffie! 🎉**
+
+### Passo 3.3: Modalità Interattiva
+
+Per inviare più testi uno dopo l'altro:
+
+```bash
+python3 tts_client.py --interactive
+```
+
+Poi inserisci il testo quando richiesto. Scrivi `quit` per uscire.
+
+### Passo 3.4: Cambiare Lingua
+
+Per usare l'inglese:
+
+```bash
+python3 tts_client.py --lang en "Hello world"
+```
+
+Per altre lingue, cambia `en` con il codice lingua (es: `it` per italiano, `es` per spagnolo, `fr` per francese, ecc.)
+
+---
+
+## 🐛 TROUBLESHOOTING - Risoluzione Problemi
+
+### Problema: "command not found: idf.py"
+
+**Soluzione:** Non hai attivato l'ambiente ESP-IDF. Esegui:
+```bash
+. $HOME/esp/v5.1.6/esp-idf/export.sh
+```
+
+### Problema: "WiFi connection failed"
+
+**Soluzione:**
+1. Controlla che SSID e password siano corrette in `sdkconfig`
+2. Assicurati che la rete WiFi sia a 2.4GHz (ESP32 non supporta 5GHz)
+3. Controlla che la password non abbia caratteri speciali strani
+
+### Problema: "Connection refused" quando invio testo
+
+**Soluzione:**
+1. Verifica che l'ESP32 sia connesso al WiFi (controlla il monitor seriale)
+2. Controlla che l'IP sia corretto
+3. Assicurati che MacBook e ESP32 siano sulla stessa rete WiFi
+
+### Problema: "No module named 'gtts'"
+
+**Soluzione:** Installa le librerie:
+```bash
+pip3 install gtts requests
+```
+
+### Problema: Non sento audio
+
+**Soluzione:**
+1. Controlla che le cuffie/speaker siano collegati correttamente
+2. Verifica che il volume non sia al minimo
+3. Controlla nel monitor seriale se ci sono errori
+4. Prova a ricollegare le cuffie
+
+### Problema: "Port not found" durante il flash
+
+**Soluzione:**
+1. Controlla che il cavo USB sia collegato
+2. Esegui `ls /dev/cu.usb*` per vedere le porte disponibili
+3. Prova a scollegare e ricollegare il cavo
+
+---
+
+## 📚 COMANDI RAPIDI - Riepilogo
+
+### Sul Terminale ESP32 (per compilare e flashare):
+
+```bash
+# Vai nella cartella
+cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control
+
+# Attiva ambiente ESP-IDF
+. $HOME/esp/v5.1.6/esp-idf/export.sh
+
+# Compila
+idf.py build
+
+# Flasha (sostituisci PORTA)
+idf.py -p /dev/cu.usbserial-0001 flash
+
+# Monitor (vedi log)
+idf.py -p /dev/cu.usbserial-0001 monitor
+```
+
+### Sul Terminale MacBook (per inviare testo):
+
+```bash
+# Vai nella cartella
+cd /Users/edoardocolella/esp/esp-adf/examples/get-started/play_mp3_control
+
+# Invia testo
+python3 tts_client.py "Il tuo testo qui"
+
+# Con IP specifico
+python3 tts_client.py --esp32-ip 192.168.1.100 "Il tuo testo qui"
+
+# Modalità interattiva
+python3 tts_client.py --interactive
+```
+
+---
+
+## ✅ CHECKLIST FINALE
+
+Prima di iniziare, assicurati di avere:
+
+- [ ] ESP32-A1S collegato via USB
+- [ ] Cuffie/speaker collegati al jack audio
+- [ ] ESP-IDF installato e configurato
+- [ ] WiFi configurato nel progetto (SSID e password)
+- [ ] Codice TTS server attivato in `CMakeLists.txt`
+- [ ] Firmware compilato e flashato sull'ESP32
+- [ ] Librerie Python installate (`gtts`, `requests`)
+- [ ] Indirizzo IP dell'ESP32 annotato
+
+---
+
+## 🎯 PROSSIMI PASSI
+
+Una volta che funziona:
+
+1. **Esperimenta con lingue diverse:**
+   ```bash
+   python3 tts_client.py --lang en "Hello world"
+   python3 tts_client.py --lang es "Hola mundo"
+   python3 tts_client.py --lang fr "Bonjour le monde"
+   ```
+
+2. **Crea uno script personalizzato:**
+   Crea un file `mio_tts.sh` con:
+   ```bash
+   #!/bin/bash
+   python3 tts_client.py --esp32-ip 192.168.1.100 "$1"
+   ```
+   Poi rendilo eseguibile: `chmod +x mio_tts.sh`
+   E usalo: `./mio_tts.sh "Il tuo testo"`
+
+3. **Integra con altre applicazioni:**
+   Puoi usare lo script da altre app o script che generano testo
+
+---
+
+## 💡 SUGGERIMENTI
+
+- **Latenza:** La prima riproduzione può richiedere 3-5 secondi (generazione audio + upload)
+- **Lunghezza testo:** Google TTS ha un limite di circa 5000 caratteri per richiesta
+- **Connessione Internet:** Sia MacBook che ESP32 devono essere connessi a Internet
+- **Stessa rete WiFi:** MacBook e ESP32 devono essere sulla stessa rete WiFi
+
+---
+
+## 🆘 AIUTO
+
+Se hai problemi:
+
+1. Controlla il monitor seriale dell'ESP32 per vedere errori
+2. Verifica che tutte le dipendenze siano installate
+3. Controlla che WiFi e IP siano configurati correttamente
+4. Rileggi la sezione Troubleshooting sopra
+
+**Buona fortuna! 🚀**
+
+
