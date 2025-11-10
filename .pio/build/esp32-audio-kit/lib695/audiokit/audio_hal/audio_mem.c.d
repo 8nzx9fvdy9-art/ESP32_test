@@ -1,0 +1,30 @@
+.pio/build/esp32-audio-kit/lib695/audiokit/audio_hal/audio_mem.c.o: \
+ .pio/libdeps/esp32-audio-kit/audiokit/src/audio_hal/audio_mem.c \
+ .pio/libdeps/esp32-audio-kit/audiokit/src/AudioKitSettings.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_idf_version.h \
+ .pio/libdeps/esp32-audio-kit/audiokit/src/audio_hal/audio_system.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_system/include/esp_system.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_err.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_compiler.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_attr.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_bit_defs.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/esp_mac.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/esp_chip_info.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_hw_support/include/esp_random.h \
+ .pio/libdeps/esp32-audio-kit/audiokit/src/audio_hal/audiokit_logger.h \
+ .pio/libdeps/esp32-audio-kit/audiokit/src/audio_hal/audio_mem.h \
+ .pio/libdeps/esp32-audio-kit/audiokit/src/audio_hal/audio_types.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/heap/include/esp_heap_caps.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/heap/include/multi_heap.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/efuse/include/esp_efuse.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/log/include/esp_log.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_rom/include/esp_rom_sys.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/reset_reasons.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_rom/include/esp32/rom/ets_sys.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/log/include/esp_log_internal.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/soc/esp32/include/soc/soc_caps.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/efuse/esp32/include/esp_efuse.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_types.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_rom/include/esp32/rom/secure_boot.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_rom/include/esp32/rom/ets_sys.h \
+ /Users/edoardocolella/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/esp_common/include/esp_assert.h

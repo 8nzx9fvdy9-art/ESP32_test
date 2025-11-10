@@ -1,0 +1,6 @@
+# Dipendenze Python per il client MacBook
+# Queste NON vanno sul server Render, solo sul MacBook locale
+
+websockets>=12.0
+pyaudio>=0.2.14
+
